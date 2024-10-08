@@ -8,8 +8,8 @@ using namespace pros;
 
 struct Intake{
     Motor intakeMotor = Motor(intakeMotor_p); //assigning intake motor
-    inline void spin() {intakeMotor.move(95);}
-    inline void spinFast() {intakeMotor.move(127);} //Set the motor to spin with max voltage
+    inline void spin(int voltage) {intakeMotor.move(0); intakeMotor.move(voltage);}
+    inline void spinRev() {intakeMotor.move(0); intakeMotor.move(-127);} //Set the motor to reverse spin with max reverse voltage
     inline void stop() {intakeMotor.move(0);} //Set the motor to stop by setting voltage = 0
-    inline void spinRev() {intakeMotor.move(-127);} //Set the motor to reverse spin with max reverse voltage
+    inline void contSpin(int voltage) {intakeMotor.move(voltage);}
 };

@@ -74,16 +74,31 @@ void autonomous() {}
  */
 void opcontrol() {
 	int clampTime = 0;
+	int intkTime = 0;
+	int volt = 127;
+	int maxVolt = 127;
+	int minVolt = 95;
 
 	while (true) {
+		//printing the volts values
+		master.print(0, 0, "Voltage: %d", volt);
+		master.print(1, 0, "Max Volt: %d", maxVolt);
+		master.print(2, 0, "Min Volt: %d", minVolt);
+
 		//Calling DriveTrain System
 		dt.teleMove();
 
-		//Intake System to spin or stop
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){intk.spinFast();}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.spin();}
+		//Intake System to spin, spinFast, spinRev, or stop
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){intk.spin(maxVolt);}
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.spin(minVolt);}
 		else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){intk.spinRev();}
 		else {intk.stop();};
+
+		//Continous Intake
+		//if (master.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(volt); volt = (volt==maxContVolt) ? 0:maxContVolt; intkTime = millis();}
+		
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(volt); volt = (volt==maxVolt) ? 0:maxVolt; intkTime = millis();}
+		else if ((master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 0) && (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)==0)) {intk.contSpin(volt);}
 		
 		//ClampLock System for Mobile Goal Locking
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && (millis() - clampTime > 500)) {clamp.toggleClampLock(); clampTime = millis();};

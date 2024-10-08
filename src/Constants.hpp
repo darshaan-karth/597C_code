@@ -15,7 +15,7 @@ namespace Constants {
     static constexpr unsigned char clamp_p = 'A'; // Port for the Pneumatic clamps
     static constexpr unsigned char intakeMotor_p = 14; // Port for the intake button
 
-    static constexpr unsigned char threshold = 11; // Threshhold for controller to start moving the robot
+    static constexpr unsigned char threshold = 9; // Threshhold for controller to start moving the robot (7%)
     
     static constexpr float trackwidth = 7.5f; // The distance between both the left and an right motors
 
