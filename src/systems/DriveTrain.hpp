@@ -2,20 +2,11 @@
 
 #include "../Constants.hpp"
 #include "pros/motor_group.hpp"
-//#include "pros/motors.hpp"
 
 using namespace Constants;
 using namespace pros;
 
 struct DriveTrain {
-    
-    /*Motor fl_mtr = Motor(port = fl_p); //assigning front left motor
-    Motor ml_mtr = Motor(ml_p); //assigning middle left motor
-    Motor bl_mtr = Motor(bl_p); //assigning back left motor
-    Motor fr_mtr = Motor(fr_p); //assigning front right motor
-    Motor mr_mtr = Motor(mr_p); //assigning middle right motor
-    Motor br_mtr = Motor(br_p); //assigning back right motor*/
-
     MotorGroup left_g = MotorGroup({fl_p, ml_p, bl_p}); //Abstracting the left side motors as a motor group
     MotorGroup right_g = MotorGroup({fr_p, mr_p, br_p}); //Abstracting the right side motors as a motor group
 
