@@ -1,8 +1,7 @@
 #pragma once
-
 #include <stdint.h>
-
 #include <cmath>
+
 namespace Constants {
     static const int8_t fl_p = -15; // Port of Front Left motor
     static const int8_t ml_p = -16; // Port of Middle Left (Back Bottom) motor
@@ -14,15 +13,17 @@ namespace Constants {
 
     static constexpr unsigned char clamp_p = 'A'; // Port for the Pneumatic clamps
     static constexpr unsigned char intakeMotor_p = 14; // Port for the intake button
-
-    static constexpr unsigned char threshold = 9; // Threshhold for controller to start moving the robot (7%)
-    
-    static constexpr float trackwidth = 7.5f; // The distance between both the left and an right motors
+    static constexpr unsigned char distanceSensor_p = 12;
 
     static const double pi = 3.14159265358979323846; // pi
-    static const double radToDeg = 180/pi;
-    static constexpr float wheelDiameter = 3.25f; // Diameter of drive wheels
-
+    static const double degToRad = pi/180.0;
+    static constexpr double trackwidth = 12.25f; // The distance between both the left and an right motors
+    static constexpr double wheelDiameter = 3.25f; // Diameter of drive wheels(inches)
+    static const double gearRatio = 3.0/5.0;
+    static const int encoder_ticks_per_rev = 1800;
+    static const double wheelCircumference = wheelDiameter * pi;
+    static const double distancePerTick = wheelCircumference/(encoder_ticks_per_rev*gearRatio);
+    
     /*
     1800 ticks/rev with 36:1 gears (BLUE)
     900 ticks/rev with 18:1 gears (GREEN)
@@ -32,12 +33,13 @@ namespace Constants {
     (1800 * 3/5)
     */
 
-    static constexpr double unitsToRevolution = 1080; // Motor units per revolution for drive wheels (1800 * 3/5)
-    static const double inchesPerTick = wheelDiameter*pi/unitsToRevolution; // The inches per tick for the drive encoders
+    static constexpr double ticksToRevolution = 1080; // Motor ticks per revolution for drive wheels (1800 * 3/5)
+    static const double inchesPerTick = (wheelDiameter*pi)/ticksToRevolution; // The inches per tick for the drive encoders
 
-    static inline double headingRestrict(double heading) {
-        if (heading <= 0) heading += pi*2;
-        heading = fmod(std::abs(heading),pi*2);
-        return heading;
-    }
+    //Restricting Variables
+    static constexpr unsigned char threshold = 9; // Threshhold for controller to start moving the robot (7%)
+    static const int maxRPM = 100;
+    static const int maxVolt = 120; //True max volt is 127 but the restricting max volt is 120;
+    static const int minVolt = 100;
+    static const int delayMove = 20;
 };

@@ -8,8 +8,8 @@ using namespace Constants;
 
 class Clamps {
     private:
-        DigitalOut clampLock = DigitalOut(clamp_p, false);
-        bool stateClamp = false;
+        DigitalOut clampLock = DigitalOut(clamp_p, true);
+        bool stateClamp = true;
 
     public:
         Clamps(){}

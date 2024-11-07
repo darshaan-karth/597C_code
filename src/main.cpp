@@ -1,4 +1,5 @@
 #include "main.h"
+#include "Constants.hpp"
 #include "pros/misc.h"
 #include "systems/DriveTrain.hpp"
 #include "systems/Intake.hpp"
@@ -57,7 +58,14 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	dt.moveHorizontal(-25); 
+	clamp.toggleClampLock();
+	dt.turnAngle(90);
+	dt.moveHorizontal(23);
+	intk.autonSpin(maxVolt, 2000); //duration is in milliseconds
+	dt.moveHorizontal(-26);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -75,14 +83,9 @@ void autonomous() {}
 void opcontrol() {
 	int clampTime = 0;
 	int intkTime = 0;
-	int volt = 0;
-	int maxVolt = 127;
-	int minVolt = 95;
+	int currentVolt = 0;
 
 	while (true) {
-		//printing the volts values
-		master.print(0, 0, "Voltage: %d", volt);
-
 		//Calling DriveTrain System
 		dt.teleMove();
 
@@ -90,12 +93,12 @@ void opcontrol() {
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){intk.spin(maxVolt);}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.spin(minVolt);}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {intk.spinRev();}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(volt); volt = (volt==maxVolt) ? 0:maxVolt; intkTime = millis();} //changing the volt values for the continous intake system
-		else if ((master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 0) && (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)==0)) {intk.contSpin(volt);} //If no inputs detected, the voltage of the motors will be decided by the volt variable
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(currentVolt); currentVolt = (currentVolt==maxVolt) ? 0:maxVolt; intkTime = millis();} //changing the volt values for the continous intake system
+		else if ((master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 0) && (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)==0)) {intk.contSpin(currentVolt);} //If no inputs detected, the voltage of the motors will be decided by the volt variable
 	
 		//ClampLock System for Mobile Goal Locking
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && (millis() - clampTime > 500)) {clamp.toggleClampLock(); clampTime = millis();};
 
-		delay(20);// Run for 20 ms then updatejiwjeiwe
+		delay(20);// Run for 20 ms then update
 	}
 }
