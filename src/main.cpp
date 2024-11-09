@@ -59,12 +59,43 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	dt.moveHorizontal(-25); 
-	clamp.toggleClampLock();
-	dt.turnAngle(90);
-	dt.moveHorizontal(23);
-	intk.autonSpin(maxVolt, 2000); //duration is in milliseconds
-	dt.moveHorizontal(-26);
+	if (isSkills == false){
+		dt.moveHorizontal(-26); 
+		clamp.toggleClampLock();
+		dt.turnAngle(90);
+		dt.moveHorizontal(22);
+		intk.autonSpin(maxVolt, 4000); //duration is in milliseconds
+		dt.moveHorizontal(-20);
+		dt.turnAngle(180);
+		dt.moveHorizontal(2);
+		clamp.toggleClampLock();
+		dt.moveHorizontal(5);
+	} else if (isSkills == true){
+		dt.moveHorizontal(-6); 
+		clamp.toggleClampLock();
+		dt.turnAngle(90);
+		dt.moveHorizontal(17);
+		intk.autonSpin(maxVolt, 2000);
+		dt.moveHorizontal(5);
+		intk.autonSpin(maxVolt, 2000);
+		dt.moveHorizontal(-5);
+		dt.turnAngle(-90);
+		dt.moveHorizontal(5);
+		intk.autonSpin(maxVolt, 2000);
+		dt.turnAngle(-90);
+		/*dt.moveHorizontal(96);
+		intk.autonSpin(maxVolt, 1000);
+		dt.turnAngle(-90);
+		dt.moveHorizontal(12);
+		intk.autonSpin(maxVolt, 1000);
+		dt.moveHorizontal(24);
+		intk.autonSpin(maxVolt, 1000);
+		dt.moveHorizontal(48);
+		intk.autonSpin(maxVolt, 1000);
+		dt.turnAngle(-90);
+		dt.moveHorizontal(24);
+		intk.autonSpin(maxVolt, 1000);*/
+	}
 }
 
 /**
@@ -91,7 +122,7 @@ void opcontrol() {
 
 		//Intake System to spin, spinFast, spinRev, or stop
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){intk.spin(maxVolt);}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.spin(minVolt);}
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.contSpin(maxVolt);}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {intk.spinRev();}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(currentVolt); currentVolt = (currentVolt==maxVolt) ? 0:maxVolt; intkTime = millis();} //changing the volt values for the continous intake system
 		else if ((master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 0) && (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)==0)) {intk.contSpin(currentVolt);} //If no inputs detected, the voltage of the motors will be decided by the volt variable
