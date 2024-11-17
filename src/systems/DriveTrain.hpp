@@ -4,20 +4,17 @@
 #include "pros/motor_group.hpp"
 #include "pros/motors.h"
 
-
 using namespace Constants;
 using namespace pros;
 
 struct DriveTrain {
+    PIDController pidController = PIDController(kP, kI, kD, integral_threshold); 
     MotorGroup left_g = MotorGroup({fl_p, ml_p, bl_p}); //Abstracting the left side motors as a motor group
     MotorGroup right_g = MotorGroup({fr_p, mr_p, br_p}); //Abstracting the right side motors as a motor group
 
     std::function<void(void)> teleMove;
 
     DriveTrain() {
-        left_g.set_brake_mode_all(E_MOTOR_BRAKE_HOLD);
-        right_g.set_brake_mode_all(E_MOTOR_BRAKE_HOLD);
-
         left_g.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
         right_g.set_encoder_units(E_MOTOR_ENCODER_COUNTS);
    
@@ -39,7 +36,10 @@ struct DriveTrain {
 
     //Function allows for the forward and backward motion of the drivetrain based on the given inches
     inline void moveHorizontal(double inches){
-        int ticksToMove = (inches-6)/distancePerTick;
+        if (fabs(inches) > offsetInches){
+            inches = (inches > 0) ? inches - offsetInches : inches + offsetInches;
+        }
+        int ticksToMove = (inches / distancePerTick) / 2;
 
         //Reseting the position of the left and right group of motors
         left_g.tare_position();
@@ -48,20 +48,23 @@ struct DriveTrain {
         left_g.move_relative(ticksToMove, maxRPM);
         right_g.move_relative(ticksToMove, maxRPM);
         
-        while (std::abs(left_g.get_position()) <= abs(ticksToMove) && std::abs(right_g.get_position()) <= abs(ticksToMove)) {
+        while (std::abs(left_g.get_position()) < std::abs(ticksToMove) && std::abs(right_g.get_position()) < std::abs(ticksToMove)) {
             delay(20); // Prevents busy waiting
         }
 
-        left_g.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
-        right_g.set_brake_mode(pros::E_MOTOR_BRAKE_HOLD);
+        left_g.move(0);
+        right_g.move(0);
 
         delay(delayMove);
     }
 
     //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
     inline void turnAngle(double angle){
-        double distanceTravel = ((trackwidth)*angle*pi)/(360.0*2.0);
-        int ticks = distanceTravel/distancePerTick;
+        if (fabs(angle) > offsetAngle){
+            angle = (angle > 0) ? angle - offsetAngle : angle + offsetAngle;
+        }
+        double distanceTravel = (trackwidth * angle * pi) / (360*2);
+        int ticks = (distanceTravel / distancePerTick);
 
         //Reseting the position of the left and right group of motors
         left_g.tare_position();
@@ -70,9 +73,75 @@ struct DriveTrain {
         left_g.move_relative(ticks, maxRPM);
         right_g.move_relative(-(ticks), maxRPM);
 
-        while (std::abs(left_g.get_position()) <= abs(ticks) && std::abs(right_g.get_position()) <= abs(ticks)) {
-            delay(20); // Prevents busy waiting
+        double tolerance = 5;  // tolerance in ticks for precision
+        while (std::abs(left_g.get_position()) < std::abs(ticks) - tolerance && std::abs(right_g.get_position()) < std::abs(ticks) - tolerance) {
+            delay(20);  // Prevents busy waiting
         }
+        
+        left_g.move(0);
+        right_g.move(0);
+
+        delay(delayMove);
+    }
+
+    //Testing Code for PID
+    inline void moveHorizontalPID(double inches){
+        double direction = (inches > 0) ? 1:-1;
+        inches = std::abs(inches);
+        inches = (inches > offsetInches) ? inches - offsetInches : inches;
+        int ticks = (inches / distancePerTick) / 2;
+
+        //Reseting the position of the left and right group of motors
+        left_g.tare_position();
+        right_g.tare_position();
+
+        //Setting the target ticks
+        pidController.setTargetTicks(ticks);
+        
+        while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
+            double controlRPM = direction * pidController.compute(std:abs(left_g.get_position()));
+
+            left_g.move_velocity(controlRPM);
+            right_g.move_velocity(controlRPM);
+
+            delay(20);
+        }
+
+        left_g.move_velocity(0);
+        right_g.move_velocity(0);
+        
+        pidController.reset();
+
+        delay(delayMove);
+    }
+
+    inline void turnAnglePID(double angle){
+        double direction = (angle > 0) ? 1:-1;
+        angle = std::abs(angle);
+
+        double distanceTravel = (trackwidth * angle * pi) / (360*2);
+        int ticks = (distanceTravel / distancePerTick);
+
+        //Reseting the position of the left and right group of motors
+        left_g.tare_position();
+        right_g.tare_position();
+
+        //Setting the target ticks
+        pidController.setTargetTicks(ticks);
+        
+        while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
+            double controlRPM = direction * pidController.compute(std:abs(left_g.get_position()));
+
+            left_g.move_velocity(controlRPM);
+            right_g.move_velocity(-controlRPM);
+
+            delay(20);
+        }
+
+        left_g.move_velocity(0);
+        right_g.move_velocity(0);
+        
+        pidController.reset();
 
         delay(delayMove);
     }
