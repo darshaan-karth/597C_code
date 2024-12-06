@@ -3,6 +3,7 @@
 #include "../Constants.hpp"
 #include "pros/motor_group.hpp"
 #include "pros/motors.h"
+#include "../autonomous/PID.hpp"
 
 using namespace Constants;
 using namespace pros;
@@ -35,56 +36,6 @@ struct DriveTrain {
     }
 
     //Function allows for the forward and backward motion of the drivetrain based on the given inches
-    inline void moveHorizontal(double inches){
-        if (fabs(inches) > offsetInches){
-            inches = (inches > 0) ? inches - offsetInches : inches + offsetInches;
-        }
-        int ticksToMove = (inches / distancePerTick) / 2;
-
-        //Reseting the position of the left and right group of motors
-        left_g.tare_position();
-        right_g.tare_position();
-
-        left_g.move_relative(ticksToMove, maxRPM);
-        right_g.move_relative(ticksToMove, maxRPM);
-        
-        while (std::abs(left_g.get_position()) < std::abs(ticksToMove) && std::abs(right_g.get_position()) < std::abs(ticksToMove)) {
-            delay(20); // Prevents busy waiting
-        }
-
-        left_g.move(0);
-        right_g.move(0);
-
-        delay(delayMove);
-    }
-
-    //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
-    inline void turnAngle(double angle){
-        if (fabs(angle) > offsetAngle){
-            angle = (angle > 0) ? angle - offsetAngle : angle + offsetAngle;
-        }
-        double distanceTravel = (trackwidth * angle * pi) / (360*2);
-        int ticks = (distanceTravel / distancePerTick);
-
-        //Reseting the position of the left and right group of motors
-        left_g.tare_position();
-        right_g.tare_position();
-        
-        left_g.move_relative(ticks, maxRPM);
-        right_g.move_relative(-(ticks), maxRPM);
-
-        double tolerance = 5;  // tolerance in ticks for precision
-        while (std::abs(left_g.get_position()) < std::abs(ticks) - tolerance && std::abs(right_g.get_position()) < std::abs(ticks) - tolerance) {
-            delay(20);  // Prevents busy waiting
-        }
-        
-        left_g.move(0);
-        right_g.move(0);
-
-        delay(delayMove);
-    }
-
-    //Testing Code for PID
     inline void moveHorizontalPID(double inches){
         double direction = (inches > 0) ? 1:-1;
         inches = std::abs(inches);
@@ -99,7 +50,7 @@ struct DriveTrain {
         pidController.setTargetTicks(ticks);
         
         while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
-            double controlRPM = direction * pidController.compute(std:abs(left_g.get_position()));
+            double controlRPM = direction * pidController.compute(std::abs(left_g.get_position()));
 
             left_g.move_velocity(controlRPM);
             right_g.move_velocity(controlRPM);
@@ -115,6 +66,7 @@ struct DriveTrain {
         delay(delayMove);
     }
 
+    //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
     inline void turnAnglePID(double angle){
         double direction = (angle > 0) ? 1:-1;
         angle = std::abs(angle);
@@ -130,10 +82,10 @@ struct DriveTrain {
         pidController.setTargetTicks(ticks);
         
         while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
-            double controlRPM = direction * pidController.compute(std:abs(left_g.get_position()));
+            double controlRPM = direction * pidController.compute(std::abs(left_g.get_position()));
 
             left_g.move_velocity(controlRPM);
-            right_g.move_velocity(-controlRPM);
+            right_g.move_velocity(-(controlRPM));
 
             delay(20);
         }
