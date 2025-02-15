@@ -4,8 +4,8 @@
 #include "systems/DriveTrain.hpp"
 #include "systems/Intake.hpp"
 #include "systems/Clamp.hpp"
+#include "systems/ArmMech.hpp"
 #include "autonomous/vision_sense.hpp"
-
 #include "pros/screen.hpp"
 
 using namespace pros;
@@ -13,6 +13,7 @@ using namespace pros;
 DriveTrain dt = DriveTrain();
 Intake intk = Intake();
 Clamps clamp = Clamps();
+ArmMech armMech = ArmMech();
 VisionRedBlue vision_sense = VisionRedBlue();
 Controller master(E_CONTROLLER_MASTER);
 
@@ -85,35 +86,35 @@ void win_advanced_auton(int chgAngle){
 	//First Stake Loading Phase with two alliance color rings & 1 Stake
 	dt.moveHorizontalPID(-30);
 	clamp.toggleClampLock();
-	//dt.moveHorizontalPID(-9); // TEST THIS LINE of CODE
+	dt.moveHorizontalPID(-8); // -9
 	dt.turnAnglePID(-45 * chgAngle); //-41.5
 	intk.autonSpinCont();
 	delay(300);
-	dt.moveHorizontalPID(34); //37
-	delay(1700);
+	dt.moveHorizontalPID(24); //37
+	delay(20);
+	dt.moveHorizontalPID(15);
+	delay(850);
 	intk.autonStopCont();
 	dt.turnAnglePID(180 * chgAngle);
 	clamp.toggleClampLock();
 
 	 //Second Stake Loading Phase with 1 alliance color ring & 1 Stake
-	dt.moveHorizontalPID(34); //41
-	delay(500);
-	dt.turnAnglePID(-45 * chgAngle); //-37.75
+	dt.moveHorizontalPID(34.5); //34
+	dt.turnAnglePID(-48 * chgAngle); //-37.75
 	intk.autonSpinCont();
 	dt.moveHorizontalPID(22); //21
-	delay(200);
+	delay(115);
+	dt.moveHorizontalPID(5); //5
+	delay(20);
 	intk.autonStopCont();
-	dt.moveHorizontalPID(2); //5
-	dt.turnAnglePID(-90 * chgAngle);
-	delay(500);
-	dt.moveHorizontalPID(-13); //-15.75
-	delay(500);
+	dt.turnAnglePID(-93 * chgAngle);
+	dt.moveHorizontalPID(-15); //-15.75
 	clamp.toggleClampLock();
 	intk.autonSpinCont();
 	delay(300);
-	dt.moveHorizontalPID(13);
+	dt.moveHorizontalPID(14);
 	dt.turnAnglePID(-90 * chgAngle);
-	delay(600);
+	delay(100);
 	intk.autonStopCont();
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(40);//48
@@ -150,93 +151,99 @@ void score_advanced_auton(int chgAngle){
 	}
 //Skills auton sequence
 void skills_auton(){
-	//First Sector
-	dt.moveHorizontalPID(-6); 
+	//RED LEFT QUADRANT
+	dt.moveHorizontalPID(-15); 
 	clamp.toggleClampLock();
 	intk.autonSpinCont();
-	delay(500);
-	dt.moveHorizontalPID(-9);
+	delay(100);
 	dt.turnAnglePID(90);
 	dt.moveHorizontalPID(24);
-	delay(500);
+	delay(100);
 	dt.moveHorizontalPID(12);
-	delay(500);
+	delay(100);
 	dt.moveHorizontalPID(-12);
 	dt.turnAnglePID(-90);
 	dt.moveHorizontalPID(12);
-	delay(500);
+	delay(100);
+	dt.turnAnglePID(180);
+	dt.moveHorizontalPID(33);
+	delay(100);
+	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(24);
+	delay(100);
+	intk.autonStopCont();
+	dt.moveHorizontalPID(-9);  ///TESTING
+	dt.turnAnglePID(-45);
+	dt.moveHorizontalPID(-28); 
+	dt.moveHorizontalPID(-25);
+	clamp.toggleClampLock();
+	dt.moveHorizontalPID(25);  //Maybe 22 or 25
+	dt.turnAnglePID(45);
+
+	//RED RIGHT QUADRANT
+	dt.moveHorizontalPID(48);
+	dt.turnAnglePID(180);
+	dt.moveHorizontalPID(-24);
+	clamp.toggleClampLock();
+	dt.turnAnglePID(180);
+	intk.autonSpinCont();
+	dt.moveHorizontalPID(24);
+	delay(100);
+	dt.moveHorizontalPID(12);
+	delay(100);
+	dt.moveHorizontalPID(-12);
+	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(12);
+	delay(100);
 	dt.turnAnglePID(180);
 	dt.moveHorizontalPID(36);
-	delay(500);
-	dt.turnAnglePID(90);
-	dt.moveHorizontalPID(24);
-	delay(500);
-	dt.moveHorizontalPID(-36);
+	delay(100);
 	dt.turnAnglePID(-90);
 	dt.moveHorizontalPID(24);
-	delay(500);
+	delay(100);
+	dt.turnAnglePID(45);
+	dt.moveHorizontalPID(34);
+	delay(100);
 	intk.autonStopCont();
-	dt.turnAnglePID(153.4);
-	dt.moveHorizontalPID(26.8);
-	dt.turnAnglePID(26.6);
-	dt.moveHorizontalPID(24);
-	dt.turnAnglePID(-135);
-	dt.moveHorizontalPID(-33);
+	dt.moveHorizontalPID(-90);
 	clamp.toggleClampLock();
 
-	//Second Sector
-	dt.moveHorizontalPID(67);
+	//BLUE LEFT QUADRANT
 	intk.autonSpinCont();
-	dt.moveHorizontalPID(34);
+	dt.moveHorizontalPID(127);
 	delay(100);
-	dt.turnAnglePID(90);
-	dt.moveHorizontalPID(34);
-	delay(100);
-	dt.turnAnglePID(-45);
-	dt.moveHorizontalPID(24);
-	delay(100);
-	dt.turnAnglePID(90);
-	dt.moveHorizontalPID(24);
-	delay(100);
-	dt.moveHorizontalPID(12);
-	delay(100);
-	dt.moveHorizontalPID(-12);
+	intk.autonStopCont();
 	dt.turnAnglePID(-90);
-	dt.moveHorizontalPID(12);
-	delay(100);
-	dt.moveHorizontalPID(-12);
-	dt.turnAnglePID(-135);
-	dt.moveHorizontalPID(-33);
+	dt.moveHorizontalPID(-34);
 	clamp.toggleClampLock();
-	dt.moveHorizontalPID(33);
-	dt.turnAnglePID(45);
+	intk.autonSpinCont();
+	delay(100);
+	intk.autonStopCont();
+	dt.turnAnglePID(-45);
+	dt.moveHorizontalPID(-20);
+	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(-36);
 	}
 
+/**********************TESTING**********************/
 void auton_vision_intake(){
-	int sig = NAN_SIG_id;
-	screen::print(pros::E_TEXT_MEDIUM, 4, "Running the TASK - %s", (intk.intake_vision_state)?"TRUE":"FALSE");
-	if (intk.intake_vision_state == true){
-		sig = vision_sense.detect_color();
-		if ((sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
-		else if ((sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}
-		else {intk.contSpin(100);}
-	} 
-	else {intk.contSpin(0);}
-
-	screen::print(pros::E_TEXT_MEDIUM, 1, "Signature: %d", sig);
-	delay(20);
+	int i = 0;
+	while (true){
+		int sig = NAN_SIG_id;
+		i++;
+		screen::print(pros::E_TEXT_MEDIUM, 4, "[%d] Running the TASK - %s", i,(intk.intake_vision_state)?"TRUE":"FALSE");
+		if (intk.intake_vision_state == true){
+			sig = vision_sense.detect_color();
+			if ((sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
+			else if ((sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}
+			else {intk.contSpin(127);}
+		} 
+		else {intk.contSpin(0);}
+		delay(20);
+	}
 }
+/**********************TESTING**********************/
 
-//Initializing the Task to run the auton vision intake
-Task auton_intk(auton_vision_intake);
-
-void test_auton(){
-	clamp.toggleClampLock();
-	delay(2000);
-	intk.autonSpinCont();
-	delay(60000);
-	intk.autonStopCont();
-}
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -250,20 +257,22 @@ void test_auton(){
  */
 
 void autonomous() {
+	//Initializing the Task to run the auton vision intake
+	//Testing CODE
+	//pros::Task auton_vision(auton_vision_intake);
 
-	//test_auton();
-
-	if (isSkills == false){
+	if (isSkills == true){
+		skills_auton();
+	} else if (isSkills == false){
 		//Change direction based on alliance color
 		int chgAngle = (isBlue == true) ? 1 : -1;
 		
 		if(winPointSide == true) {win_advanced_auton(chgAngle);}
 		else{basic_auton();}
 		//else {score_advanced_auton(chgAngle);}
-
-	} else if (isSkills == true){
-		skills_auton();
 	}
+
+	//auton_vision.suspend();
 }
 
 /**
@@ -279,8 +288,33 @@ void autonomous() {
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
+
+/****************************TESTING****************************/
+void manu_vision_intake(){
+	int stop = 1;
+	while (stop != 1){
+		int sig = NAN_SIG_id;
+		//screen::print(pros::E_TEXT_MEDIUM, 4, "[%d] Running the TASK - %s", i,(intk.intake_vision_state)?"TRUE":"FALSE");
+		sig = vision_sense.detect_color();
+		if ((sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
+		else if ((sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}
+		
+		//Intake System to spin, spinRev, or stop
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.contSpin(maxVolt);}
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {intk.spinRev();}
+		else {intk.contSpin(0);}
+		delay(20);
+	}
+}
+/****************************TESTING****************************/
+
 void opcontrol() {
+	//Initializing the Task to run the auton vision intake
+	//Testing CODE
+	//pros::Task manu_intk(manu_vision_intake);
+
 	int clampTime = 0;
+	int armMechTime = 0;
 	int intkTime = 0;
 	int currentVolt = 0;
 	int vision_sig = NAN_SIG_id;
@@ -289,16 +323,19 @@ void opcontrol() {
 		//Calling DriveTrain System
 		dt.teleMove();
 
-		vision_sig = vision_sense.detect_color();
+		/*vision_sig = vision_sense.detect_color();
 		if ((vision_sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
-		else if ((vision_sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}
+		else if ((vision_sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}*/
+		
+		//ArmMech System for Moving the Intake System up or down
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && (millis() - armMechTime > 500)) {armMech.toggleArmState(); armMechTime = millis();};
 
 		//Intake System to spin, spinFast, spinRev, or stop
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.contSpin(maxVolt);}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {intk.spinRev();}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(currentVolt); currentVolt = (currentVolt==maxVolt) ? 0:maxVolt; intkTime = millis();} //changing the volt values for the continous intake system
 		else if ((master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 0) && (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)==0)) {intk.contSpin(currentVolt);} //If no inputs detected, the voltage of the motors will be decided by the volt variable
-	
+
 		//ClampLock System for Mobile Goal Locking
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && (millis() - clampTime > 500)) {clamp.toggleClampLock(); clampTime = millis();};
 

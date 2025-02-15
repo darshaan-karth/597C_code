@@ -15,12 +15,12 @@ struct Intake{
     inline void contSpin(int voltage) {intakeMotor.move(voltage);}
 
     //Auton Intake Code
-    //inline void autonSpinCont() {intakeMotor.move(127); delay(delayMove);}
-    //inline void autonStopCont() {intakeMotor.move(0); delay(delayMove);}
+    inline void autonSpinCont() {intakeMotor.move(127); delay(delayMove);}
+    inline void autonStopCont() {intakeMotor.move(0); delay(delayMove);}
 
     //Auton Vision Intake Code
-    inline void autonSpinCont() {intake_vision_state = true;}
-    inline void autonStopCont() {intake_vision_state = false;}
+    //inline void autonSpinCont() {intake_vision_state = true;}
+    //inline void autonStopCont() {intake_vision_state = false;}
 
     //Vision Controlled Intake
     inline void visionIntake() {

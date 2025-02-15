@@ -3,16 +3,17 @@
 #include <cmath>
 
 namespace Constants {
-    static const int8_t fl_p = -15; // Port of Front Left motor
-    static const int8_t ml_p = 16; // Port of Middle Left (Back Bottom) motor
-    static const int8_t bl_p = -17; // Port of Back Left (Back Top) motor , Because this is on top reversing it
+    static const int8_t fl_p = -2; // Port of Front Left motor
+    static const int8_t ml_p = 18; // Port of Middle Left (Back Bottom) motor
+    static const int8_t bl_p = -20; // Port of Back Left (Back Top) motor , Because this is on top reversing it
 
-    static const int8_t fr_p = 18; // Port of Front Right motor
-    static const int8_t mr_p = -20; // Port of Middle Right (Back Bottom) motor
-    static const int8_t  br_p = 19; // Port of Back Right (Back Top) motor, Because this is on top reversing it
+    static const int8_t fr_p = 15; // Port of Front Right motor
+    static const int8_t mr_p = -16; // Port of Middle Right (Back Bottom) motor
+    static const int8_t  br_p = 9; // Port of Back Right (Back Top) motor, Because this is on top reversing it
 
     static constexpr unsigned char clamp_p = 'A'; // Port for the Pneumatic clamps
-    static constexpr unsigned char intakeMotor_p = 14; // Port for the intake button
+    static constexpr unsigned char arm_p = 'B'; // Port for the Pneumatic clamps
+    static constexpr unsigned char intakeMotor_p = -19; // Port for the intake button
     static constexpr unsigned char vision_p = 13;
 
     static const double pi = 3.14159265358979323846; // pi
@@ -29,13 +30,16 @@ namespace Constants {
     constexpr int RED_SIG_id = 1;
     constexpr int BLUE_SIG_id = 2;
     static const int object_threshold = 0;
-    static const int NUM_VISION_OBJECTS = 4;
+    static const int NUM_VISION_OBJECTS = 2;
 
     //PID Control Constants
-    static const double kP = 0.2;
-    static const double kI = 0.2;
-    static const double kD = 0.2;
+    /*IMPORTANT - NEED TO FINE TUNE TO THE PID CONSTANTS TO ADJUST FOR DIFFERENCES IN FIELD  ***THESE VALUES ARE SUBJECTED TO CHANGE BASED ON ROBOT*** */
+    static const double kP = 0.128;
+    static const double kI = 0.0399;
+    static const double kD = 0.129;
     static const double integral_threshold = 10;
+
+    static const double angle_threshold = -1;
 
     /*
     1800 ticks/rev with 36:1 gears (BLUE)
@@ -50,12 +54,12 @@ namespace Constants {
     static constexpr unsigned char threshold = 9; // Threshhold for controller to start moving the robot (7%)
     static const int maxRPM = 80;
     static const int maxAutonVolt = 127;
-    static const int maxVolt = 127; //True max volt is 127 but the restricting max volt is 120;
+    static const int maxVolt = 110; //True max volt is 127 but the restricting max volt is 120;
     static const int minVolt = 100;
     static const int delayMove = 150;
 
     //Auton modes
-    static const bool isSkills = false; // if FALSE then in-match auton else Skills auton
+    static const bool isSkills = true; // if FALSE then in-match auton else Skills auton
 
     static const bool winPointSide = true; // if TRUE then in-match auton would be starting from the side with extra mobile stake else the other side
     static const bool isBlue = true; // if TRUE then in-match auton is starting from BLUE SIDE else RED SIDE

@@ -49,6 +49,9 @@ struct DriveTrain {
         //Setting the target ticks
         pidController.setTargetTicks(ticks);
         
+        /*MAJOR CHANGE FOR TESTING --> SWITCHING '&&' TO '||' TO ENSURE BOTH SIDES REACH THE TARGET
+        CHANGED IT BACK TO '&&' - 2/11/2025
+        */
         while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
             double controlRPM = direction * pidController.compute(std::abs(left_g.get_position()));
 
@@ -69,7 +72,7 @@ struct DriveTrain {
     //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
     inline void turnAnglePID(double angle){
         double direction = (angle > 0) ? 1:-1;
-        angle = std::abs(angle);
+        angle = std::abs(angle+angle_threshold);
 
         double distanceTravel = (trackwidth * angle * pi) / (360*2);
         int ticks = (distanceTravel / distancePerTick);

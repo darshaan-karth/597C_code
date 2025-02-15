@@ -32,9 +32,9 @@ struct VisionRedBlue {
         if (vision_sensor.get_object_count() > object_threshold) {
             vision_sensor.read_by_code(0, COLOR_CODE, NUM_VISION_OBJECTS, object_arr);
             detect_sig = object_arr[0].signature;
-            //screen::print(pros::E_TEXT_MEDIUM, 2, "Found a %s", ((detect_sig==RED_SIG_id)?"RED":"BLUE"));
         } 
         screen::print(pros::E_TEXT_MEDIUM, 5, "Signature: %d", detect_sig);
+        delay(20);
         return(detect_sig);
     }
 };
