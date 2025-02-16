@@ -60,61 +60,56 @@ void competition_initialize() {}
 * Skills Auton -> **/
 
 //The basic in-match auton sequence
-void basic_auton(){
-	dt.moveHorizontalPID(-35);
-	delay(500);
+void basic_auton(int chgAngle){
+	dt.moveHorizontalPID(-33);
 	clamp.toggleClampLock();
-	delay(500);
-	dt.turnAnglePID(86);
-	delay(500);
-	dt.moveHorizontalPID(28);
-	delay(500);
+	dt.moveHorizontalPID(-4);
+	delay(20);
 	intk.autonSpinCont();
-	delay(4000);
-	intk.autonStopCont();
-	delay(500);
-	dt.moveHorizontalPID(-28);
-	delay(500);
-	dt.turnAnglePID(189);
-	delay(500);
+	delay(40);
+	dt.turnAnglePID(90 * chgAngle);
+	dt.moveHorizontalPID(24);
+	delay(30);
+	dt.turnAnglePID(180);
 	clamp.toggleClampLock();
-	delay(500);
-	dt.moveHorizontalPID(25);
+	intk.autonStopCont();
+	delay(20);
+	dt.moveHorizontalPID(40);
 	}
 //Advanced in-match Win Point auton sequence 
 void win_advanced_auton(int chgAngle){
 	//First Stake Loading Phase with two alliance color rings & 1 Stake
-	dt.moveHorizontalPID(-30);
+	dt.moveHorizontalPID(-29);
 	clamp.toggleClampLock();
-	dt.moveHorizontalPID(-8); // -9
-	dt.turnAnglePID(-45 * chgAngle); //-41.5
+	dt.moveHorizontalPID(-14);
+	dt.moveHorizontalPID(5);
+	dt.turnAnglePID(-45 * chgAngle);
 	intk.autonSpinCont();
-	delay(300);
-	dt.moveHorizontalPID(24); //37
+	delay(10);
+	dt.moveHorizontalPID(34);
 	delay(20);
-	dt.moveHorizontalPID(15);
-	delay(850);
+	dt.moveHorizontalPID(5);
+	delay(20);
 	intk.autonStopCont();
 	dt.turnAnglePID(180 * chgAngle);
 	clamp.toggleClampLock();
 
 	 //Second Stake Loading Phase with 1 alliance color ring & 1 Stake
-	dt.moveHorizontalPID(34.5); //34
-	dt.turnAnglePID(-48 * chgAngle); //-37.75
+	dt.moveHorizontalPID(33);
+	dt.turnAnglePID(-45 * chgAngle);
+	dt.moveHorizontalPID(-5);
 	intk.autonSpinCont();
-	dt.moveHorizontalPID(22); //21
-	delay(115);
-	dt.moveHorizontalPID(5); //5
+	dt.moveHorizontalPID(24);
 	delay(20);
 	intk.autonStopCont();
-	dt.turnAnglePID(-93 * chgAngle);
-	dt.moveHorizontalPID(-15); //-15.75
+	dt.turnAnglePID(-90 * chgAngle);
+	dt.moveHorizontalPID(-18);
 	clamp.toggleClampLock();
 	intk.autonSpinCont();
-	delay(300);
+	delay(20);
 	dt.moveHorizontalPID(14);
 	dt.turnAnglePID(-90 * chgAngle);
-	delay(100);
+	delay(20);
 	intk.autonStopCont();
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(40);//48
@@ -128,7 +123,7 @@ void score_advanced_auton(int chgAngle){
 	dt.turnAnglePID(-90 * chgAngle);
 	dt.moveHorizontalPID(24);
 	dt.turnAnglePID(-90 * chgAngle);
-	delay(100);
+	delay(20);
 	intk.autonSpinCont();
 	delay(500);
 	intk.autonStopCont();
@@ -152,25 +147,25 @@ void score_advanced_auton(int chgAngle){
 //Skills auton sequence
 void skills_auton(){
 	//RED LEFT QUADRANT
-	dt.moveHorizontalPID(-15); 
+	dt.moveHorizontalPID(-9); 
 	clamp.toggleClampLock();
 	intk.autonSpinCont();
-	delay(100);
+	delay(20);
 	dt.turnAnglePID(90);
 	dt.moveHorizontalPID(24);
-	delay(100);
+	delay(20);
 	dt.moveHorizontalPID(12);
-	delay(100);
+	delay(20);
 	dt.moveHorizontalPID(-12);
 	dt.turnAnglePID(-90);
 	dt.moveHorizontalPID(12);
-	delay(100);
+	delay(20);
 	dt.turnAnglePID(180);
 	dt.moveHorizontalPID(33);
-	delay(100);
+	delay(20);
 	dt.turnAnglePID(90);
 	dt.moveHorizontalPID(24);
-	delay(100);
+	delay(20);
 	intk.autonStopCont();
 	dt.moveHorizontalPID(-9);  ///TESTING
 	dt.turnAnglePID(-45);
@@ -188,22 +183,22 @@ void skills_auton(){
 	dt.turnAnglePID(180);
 	intk.autonSpinCont();
 	dt.moveHorizontalPID(24);
-	delay(100);
+	delay(20);
 	dt.moveHorizontalPID(12);
-	delay(100);
+	delay(20);
 	dt.moveHorizontalPID(-12);
 	dt.turnAnglePID(90);
 	dt.moveHorizontalPID(12);
-	delay(100);
+	delay(20);
 	dt.turnAnglePID(180);
 	dt.moveHorizontalPID(36);
-	delay(100);
+	delay(20);
 	dt.turnAnglePID(-90);
 	dt.moveHorizontalPID(24);
-	delay(100);
+	delay(20);
 	dt.turnAnglePID(45);
 	dt.moveHorizontalPID(34);
-	delay(100);
+	delay(20);
 	intk.autonStopCont();
 	dt.moveHorizontalPID(-90);
 	clamp.toggleClampLock();
@@ -211,13 +206,13 @@ void skills_auton(){
 	//BLUE LEFT QUADRANT
 	intk.autonSpinCont();
 	dt.moveHorizontalPID(127);
-	delay(100);
+	delay(20);
 	intk.autonStopCont();
 	dt.turnAnglePID(-90);
 	dt.moveHorizontalPID(-34);
 	clamp.toggleClampLock();
 	intk.autonSpinCont();
-	delay(100);
+	delay(20);
 	intk.autonStopCont();
 	dt.turnAnglePID(-45);
 	dt.moveHorizontalPID(-20);
@@ -268,7 +263,7 @@ void autonomous() {
 		int chgAngle = (isBlue == true) ? 1 : -1;
 		
 		if(winPointSide == true) {win_advanced_auton(chgAngle);}
-		else{basic_auton();}
+		else{basic_auton(chgAngle);}
 		//else {score_advanced_auton(chgAngle);}
 	}
 

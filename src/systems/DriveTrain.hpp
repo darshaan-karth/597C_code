@@ -53,10 +53,11 @@ struct DriveTrain {
         CHANGED IT BACK TO '&&' - 2/11/2025
         */
         while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
-            double controlRPM = direction * pidController.compute(std::abs(left_g.get_position()));
+            double left_controlRPM = direction * (pidController.compute(std::abs(left_g.get_position())) - left_g_offset_threhold);
+            double right_controlRPM = direction * (pidController.compute(std::abs(right_g.get_position())) - right_g_offset_threhold);
 
-            left_g.move_velocity(controlRPM);
-            right_g.move_velocity(controlRPM);
+            left_g.move_velocity(left_controlRPM);
+            right_g.move_velocity(right_controlRPM);
 
             delay(20);
         }
@@ -85,10 +86,11 @@ struct DriveTrain {
         pidController.setTargetTicks(ticks);
         
         while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
-            double controlRPM = direction * pidController.compute(std::abs(left_g.get_position()));
+            double left_turn_controlRPM = direction * (pidController.compute(std::abs(left_g.get_position())) - left_g_offset_threhold );
+            double right_turn_controlRPM = direction * (pidController.compute(std::abs(right_g.get_position())) - right_g_offset_threhold);
 
-            left_g.move_velocity(controlRPM);
-            right_g.move_velocity(-(controlRPM));
+            left_g.move_velocity(left_turn_controlRPM);
+            right_g.move_velocity(-(right_turn_controlRPM));
 
             delay(20);
         }

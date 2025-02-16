@@ -34,12 +34,16 @@ namespace Constants {
 
     //PID Control Constants
     /*IMPORTANT - NEED TO FINE TUNE TO THE PID CONSTANTS TO ADJUST FOR DIFFERENCES IN FIELD  ***THESE VALUES ARE SUBJECTED TO CHANGE BASED ON ROBOT*** */
-    static const double kP = 0.128;
-    static const double kI = 0.0399;
-    static const double kD = 0.129;
+    static const double pid_c = 1.225;  //Speedup by 1.255
+    static const double kP = 0.128 * pid_c;
+    static const double kI = 0.0399* pid_c;
+    static const double kD = 0.129* pid_c;
     static const double integral_threshold = 10;
 
-    static const double angle_threshold = -1;
+    static const double angle_threshold = 0; //2
+    static const double left_g_offset_threhold = 0.425;
+    static const double right_g_offset_threhold = 0;
+
 
     /*
     1800 ticks/rev with 36:1 gears (BLUE)
@@ -54,13 +58,13 @@ namespace Constants {
     static constexpr unsigned char threshold = 9; // Threshhold for controller to start moving the robot (7%)
     static const int maxRPM = 80;
     static const int maxAutonVolt = 127;
-    static const int maxVolt = 110; //True max volt is 127 but the restricting max volt is 120;
+    static const int maxVolt = 127; //True max volt is 127 but the restricting max volt is 120;
     static const int minVolt = 100;
-    static const int delayMove = 150;
+    static const int delayMove = 20;
 
     //Auton modes
-    static const bool isSkills = true; // if FALSE then in-match auton else Skills auton
+    static const bool isSkills = false; // if FALSE then in-match auton else Skills auton
 
-    static const bool winPointSide = true; // if TRUE then in-match auton would be starting from the side with extra mobile stake else the other side
+    static const bool winPointSide = false; // if TRUE then in-match auton would be starting from the side with extra mobile stake else the other side
     static const bool isBlue = true; // if TRUE then in-match auton is starting from BLUE SIDE else RED SIDE
 };
