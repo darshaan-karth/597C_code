@@ -4,12 +4,16 @@
 #include "pros/motor_group.hpp"
 #include "pros/motors.h"
 #include "../autonomous/PID.hpp"
+#include "pros/imu.hpp"
 
 using namespace Constants;
 using namespace pros;
 
 struct DriveTrain {
-    PIDController pidController = PIDController(kP, kI, kD, integral_threshold); 
+    PIDController move_pidController = PIDController(kP_move, kI_move, kD_move, integral_threshold_move);
+    PIDController turn_pidController = PIDController(kP_turn, kI_turn, kD_turn, integral_threshold_turn); 
+
+    Imu imuSensor = Imu(imu_p); //Setting up the IMU sensor
     MotorGroup left_g = MotorGroup({fl_p, ml_p, bl_p}); //Abstracting the left side motors as a motor group
     MotorGroup right_g = MotorGroup({fr_p, mr_p, br_p}); //Abstracting the right side motors as a motor group
 
@@ -21,6 +25,7 @@ struct DriveTrain {
    
         left_g.tare_position();
         right_g.tare_position();
+        imuSensor.tare_yaw();
     }
 
     inline void tankDrive(signed char leftY, signed char rightY){
@@ -37,69 +42,74 @@ struct DriveTrain {
 
     //Function allows for the forward and backward motion of the drivetrain based on the given inches
     inline void moveHorizontalPID(double inches){
-        double direction = (inches > 0) ? 1:-1;
-        inches = std::abs(inches);
-        inches = (inches > offsetInches) ? inches - offsetInches : inches;
+        //double direction = (inches > 0) ? 1:-1;
+        //inches = std::abs(inches);
         int ticks = (inches / distancePerTick) / 2;
 
         //Reseting the position of the left and right group of motors
         left_g.tare_position();
         right_g.tare_position();
+        imuSensor.tare_yaw();
 
         //Setting the target ticks
-        pidController.setTargetTicks(ticks);
-        
-        /*MAJOR CHANGE FOR TESTING --> SWITCHING '&&' TO '||' TO ENSURE BOTH SIDES REACH THE TARGET
-        CHANGED IT BACK TO '&&' - 2/11/2025
-        */
-        while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
-            double left_controlRPM = direction * (pidController.compute(std::abs(left_g.get_position())) - left_g_offset_threhold);
-            double right_controlRPM = direction * (pidController.compute(std::abs(right_g.get_position())) - right_g_offset_threhold);
+        move_pidController.reset();
+        turn_pidController.reset();
+        move_pidController.setTargetTicks(ticks);
+        turn_pidController.setTargetTicks(0);
 
+        //(std::abs(left_g.get_position()) < std::abs(ticks) && std::abs(right_g.get_position()) < std::abs(ticks))
+        
+        while (std::abs((left_g.get_position() + right_g.get_position()) / 2) < std::abs(ticks)) {
+            double move_controlRPM = move_pidController.compute(((left_g.get_position() + right_g.get_position()) / 2));
+            double turn_controlRPM = turn_pidController.compute(imuSensor.get_yaw());
+            
+            double left_controlRPM = move_controlRPM + turn_controlRPM;
+            double right_controlRPM = move_controlRPM - turn_controlRPM;
+
+            left_controlRPM = std::clamp(left_controlRPM, -maxRPM, maxRPM);
+            right_controlRPM = std::clamp(right_controlRPM, -maxRPM, maxRPM);
+            
             left_g.move_velocity(left_controlRPM);
             right_g.move_velocity(right_controlRPM);
 
-            delay(20);
+            delay(5);
         }
 
         left_g.move_velocity(0);
         right_g.move_velocity(0);
         
-        pidController.reset();
-
+        move_pidController.reset();
+        turn_pidController.reset();
         delay(delayMove);
     }
 
     //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
     inline void turnAnglePID(double angle){
-        double direction = (angle > 0) ? 1:-1;
-        angle = std::abs(angle+angle_threshold);
-
-        double distanceTravel = (trackwidth * angle * pi) / (360*2);
-        int ticks = (distanceTravel / distancePerTick);
-
-        //Reseting the position of the left and right group of motors
-        left_g.tare_position();
-        right_g.tare_position();
+        //double direction = (angle > 0) ? 1:-1;
+        //angle = std::abs(angle);
+        imuSensor.tare_yaw();
 
         //Setting the target ticks
-        pidController.setTargetTicks(ticks);
+        turn_pidController.reset();
+        turn_pidController.setTargetTicks(angle);
         
-        while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
-            double left_turn_controlRPM = direction * (pidController.compute(std::abs(left_g.get_position())) - left_g_offset_threhold );
-            double right_turn_controlRPM = direction * (pidController.compute(std::abs(right_g.get_position())) - right_g_offset_threhold);
+        while (std::abs(imuSensor.get_yaw()) < std::abs(angle)) {
+            if (std::abs(imuSensor.get_yaw() - angle) < angle_tolerance) {
+                break;
+            }
+            double turn_controlRPM = turn_pidController.compute(imuSensor.get_yaw());
+            turn_controlRPM = std::clamp(turn_controlRPM, -maxRPM, maxRPM);
 
-            left_g.move_velocity(left_turn_controlRPM);
-            right_g.move_velocity(-(right_turn_controlRPM));
+            left_g.move_velocity(turn_controlRPM);
+            right_g.move_velocity(-(turn_controlRPM));
 
-            delay(20);
+            delay(5);
         }
 
         left_g.move_velocity(0);
         right_g.move_velocity(0);
         
-        pidController.reset();
-
+        turn_pidController.reset();
         delay(delayMove);
     }
 };
