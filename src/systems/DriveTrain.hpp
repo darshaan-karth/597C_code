@@ -44,6 +44,7 @@ struct DriveTrain {
     inline void moveHorizontalPID(double inches){
         //double direction = (inches > 0) ? 1:-1;
         //inches = std::abs(inches);
+        double turn_yaw, turn_controlRPM, left_controlRPM, right_controlRPM;
         int ticks = (inches / distancePerTick) / 2;
 
         //Reseting the position of the left and right group of motors
@@ -58,13 +59,21 @@ struct DriveTrain {
         turn_pidController.setTargetTicks(0);
 
         //(std::abs(left_g.get_position()) < std::abs(ticks) && std::abs(right_g.get_position()) < std::abs(ticks))
-        
         while (std::abs((left_g.get_position() + right_g.get_position()) / 2) < std::abs(ticks)) {
-            double move_controlRPM = move_pidController.compute(((left_g.get_position() + right_g.get_position()) / 2));
-            double turn_controlRPM = turn_pidController.compute(imuSensor.get_yaw());
+            double move_controlRPM = move_pidController.compute(((left_g.get_position() + right_g.get_position()) / 2), false);
             
-            double left_controlRPM = move_controlRPM + turn_controlRPM;
-            double right_controlRPM = move_controlRPM - turn_controlRPM;
+            if (std::abs(move_controlRPM) > pid_threshold){
+                turn_yaw = (imuSensor.get_yaw() < 0) ? -(imuSensor.get_yaw() - angle_threshold) : -(imuSensor.get_yaw() + angle_threshold);
+                turn_controlRPM = turn_pidController.compute(turn_yaw, true);
+            }
+
+            if (turn_controlRPM > 0){
+                left_controlRPM = move_controlRPM + turn_controlRPM;
+                right_controlRPM = move_controlRPM;
+            } else {
+                left_controlRPM = move_controlRPM;
+                right_controlRPM = move_controlRPM + turn_controlRPM;
+            }
 
             left_controlRPM = std::clamp(left_controlRPM, -maxRPM, maxRPM);
             right_controlRPM = std::clamp(right_controlRPM, -maxRPM, maxRPM);
@@ -86,7 +95,7 @@ struct DriveTrain {
     //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
     inline void turnAnglePID(double angle){
         //double direction = (angle > 0) ? 1:-1;
-        //angle = std::abs(angle);
+        //angle = std::abs(angle);     
         imuSensor.tare_yaw();
 
         //Setting the target ticks
@@ -94,10 +103,8 @@ struct DriveTrain {
         turn_pidController.setTargetTicks(angle);
         
         while (std::abs(imuSensor.get_yaw()) < std::abs(angle)) {
-            if (std::abs(imuSensor.get_yaw() - angle) < angle_tolerance) {
-                break;
-            }
-            double turn_controlRPM = turn_pidController.compute(imuSensor.get_yaw());
+            double turn_yaw = (imuSensor.get_yaw() < 0) ? -(imuSensor.get_yaw() - angle_threshold) : -(imuSensor.get_yaw() - angle_threshold);
+            double turn_controlRPM = turn_pidController.compute(turn_yaw, true);
             turn_controlRPM = std::clamp(turn_controlRPM, -maxRPM, maxRPM);
 
             left_g.move_velocity(turn_controlRPM);

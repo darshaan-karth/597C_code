@@ -21,9 +21,14 @@ class PIDController {
         void setTargetTicks(double target) {target_ticks = target;}
         void reset() {target_ticks = 0.0; previousError = 0.0; integral = 0.0;}
 
-        double compute(double current_ticks){
+        double compute(double current_ticks, bool is_turn_pid){
             double error = target_ticks - current_ticks;
-
+            
+            if (is_turn_pid){
+                if (error < -180) {error += 360;}
+                else if (error > 180) {error += 360;}
+            }
+            
             if (abs(error) < integralThreshold){integral += error;}
             else {integral=0;}
 

@@ -57,8 +57,16 @@ void competition_initialize() {}
 * Skills Auton -> **/
 
 //The basic in-match auton sequence
+/*void basic_auton(int chgAngle){
+	//dt.moveHorizontalPID(-30);
+	dt.turnAnglePID(90);
+	delay(100);
+	dt.turnAnglePID(-90);
+	dt.turnAnglePID(180-45);
+}*/
+
 void basic_auton(int chgAngle){
-	dt.moveHorizontalPID(-33);
+	dt.moveHorizontalPID(-30);
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(-4);
 	delay(20);
@@ -67,12 +75,13 @@ void basic_auton(int chgAngle){
 	dt.turnAnglePID(90 * chgAngle);
 	dt.moveHorizontalPID(24);
 	delay(30);
-	dt.turnAnglePID(180);
+	dt.turnAnglePID(180-45);
 	clamp.toggleClampLock();
 	intk.autonStopCont();
 	delay(20);
 	dt.moveHorizontalPID(40);
 	}
+
 //Advanced in-match Win Point auton sequence 
 void win_advanced_auton(int chgAngle){
 	//First Stake Loading Phase with two alliance color rings & 1 Stake
@@ -144,11 +153,14 @@ void score_advanced_auton(int chgAngle){
 //Skills auton sequence
 void skills_auton(){
 	//RED LEFT QUADRANT
-	dt.moveHorizontalPID(-9); 
-	clamp.toggleClampLock();
 	intk.autonSpinCont();
 	delay(20);
+	intk.autonStopCont();
+	dt.moveHorizontalPID(15);
 	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(-24);
+	clamp.toggleClampLock();
+	dt.turnAnglePID(180);
 	dt.moveHorizontalPID(24);
 	delay(20);
 	dt.moveHorizontalPID(12);
