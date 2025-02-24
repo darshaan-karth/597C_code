@@ -22,7 +22,7 @@ namespace Constants {
     static const double gearRatio = 3.0/5.0;
     static const int encoder_ticks_per_rev = 1800;
     static const double wheelCircumference = wheelDiameter * pi;
-    static const double distancePerTick = wheelCircumference/(encoder_ticks_per_rev * gearRatio);
+    static const double distancePerTick = wheelCircumference/(encoder_ticks_per_rev * gearRatio); 
     static const int offsetInches = 2; // Fine-tuning the drivetrain for auton  **TRY 11 inches**  - 2
 
     //Setting up the signature IDs for blue and red colors
@@ -43,7 +43,6 @@ namespace Constants {
     static const double angle_threshold = 0; //2
     static const double left_g_offset_threhold = 0.425;
     static const double right_g_offset_threhold = 0;
-
 
     /*
     1800 ticks/rev with 36:1 gears (BLUE)

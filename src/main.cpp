@@ -60,7 +60,30 @@ void competition_initialize() {}
 * Skills Auton -> **/
 
 //The basic in-match auton sequence
+/*void basic_auton(int chgAngle){
+	dt.moveHorizontalPID(-24);
+	dt.turnAnglePID(90 * chgAngle);
+	intk.autonSpinCont();
+	delay(50);
+	intk.autonStopCont();
+	dt.moveHorizontalPID(30);
+	}
+*/
 void basic_auton(int chgAngle){
+	dt.moveHorizontalPID(-33);
+	clamp.toggleClampLock();
+	dt.moveHorizontalPID(-4);
+	intk.autonSpinCont();
+	delay(30);
+	dt.turnAnglePID(-45);
+	dt.moveHorizontalPID(34);
+	delay(30);
+	intk.autonStopCont();
+	dt.turnAnglePID(180);
+	dt.moveHorizontalPID(-34);
+	clamp.toggleClampLock();
+	}
+/*void basic_auton(int chgAngle){
 	dt.moveHorizontalPID(-33);
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(-4);
@@ -75,7 +98,7 @@ void basic_auton(int chgAngle){
 	intk.autonStopCont();
 	delay(20);
 	dt.moveHorizontalPID(40);
-	}
+	}*/
 //Advanced in-match Win Point auton sequence 
 void win_advanced_auton(int chgAngle){
 	//First Stake Loading Phase with two alliance color rings & 1 Stake
@@ -147,35 +170,43 @@ void score_advanced_auton(int chgAngle){
 //Skills auton sequence
 void skills_auton(){
 	//RED LEFT QUADRANT
-	dt.moveHorizontalPID(-9); 
-	clamp.toggleClampLock();
 	intk.autonSpinCont();
+	delay(1000);
+	intk.autonStopCont();
+	delay(500);
+	dt.moveHorizontalPID(18);
+	dt.turnAnglePID(90); 
+	dt.moveHorizontalPID(-20);
+	clamp.toggleClampLock();
+	dt.moveHorizontalPID(-7);
+	dt.turnAnglePID(179);
+	intk.autonSpinCont();
+	dt.moveHorizontalPID(20);
 	delay(20);
-	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(11);
+	delay(20);
+	dt.moveHorizontalPID(-34);
+	dt.turnAnglePID(-27);
+	dt.moveHorizontalPID(29);
+	delay(20);
+	dt.moveHorizontalPID(-29);
+	dt.turnAnglePID(27);
 	dt.moveHorizontalPID(24);
-	delay(20);
-	dt.moveHorizontalPID(12);
-	delay(20);
-	dt.moveHorizontalPID(-12);
-	dt.turnAnglePID(-90);
-	dt.moveHorizontalPID(12);
-	delay(20);
-	dt.turnAnglePID(180);
-	dt.moveHorizontalPID(33);
+	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(22);
 	delay(20);
 	dt.turnAnglePID(90);
 	dt.moveHorizontalPID(24);
 	delay(20);
 	intk.autonStopCont();
-	dt.moveHorizontalPID(-9);  ///TESTING
+	dt.moveHorizontalPID(-8);  ///TESTING
 	dt.turnAnglePID(-45);
-	dt.moveHorizontalPID(-28); 
-	dt.moveHorizontalPID(-25);
+	dt.moveHorizontalPID(-50);
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(25);  //Maybe 22 or 25
 	dt.turnAnglePID(45);
 
-	//RED RIGHT QUADRANT
+	/*//RED RIGHT QUADRANT
 	dt.moveHorizontalPID(48);
 	dt.turnAnglePID(180);
 	dt.moveHorizontalPID(-24);
@@ -217,7 +248,7 @@ void skills_auton(){
 	dt.turnAnglePID(-45);
 	dt.moveHorizontalPID(-20);
 	dt.turnAnglePID(90);
-	dt.moveHorizontalPID(-36);
+	dt.moveHorizontalPID(-36);*/
 	}
 
 /**********************TESTING**********************/
