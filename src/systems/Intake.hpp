@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Constants.hpp"
+#include "pros/motor_group.hpp"
 #include "pros/motors.hpp"
 
 using namespace Constants;
@@ -11,12 +12,16 @@ struct Intake{
         bool intake_vision_state = false;
 
     Motor intakeMotor = Motor(intakeMotor_p); //assigning intake motor
-    inline void spinRev() {intakeMotor.move(0); intakeMotor.move(-(maxVolt));} //Set the motor to reverse spin with max reverse voltage
-    inline void contSpin(int voltage) {intakeMotor.move(voltage);}
+    Motor intakeMotor2 = Motor(intakeMotor2_p);
+
+    MotorGroup intake = MotorGroup({intakeMotor_p, intakeMotor2_p});
+
+    inline void spinRev() {intake.move(0); intake.move(-(maxVolt));} //Set the motor to reverse spin with max reverse voltage
+    inline void contSpin(int voltage) {intake.move(voltage);}
 
     //Auton Intake Code
-    inline void autonSpinCont() {intakeMotor.move(127); delay(delayMove);}
-    inline void autonStopCont() {intakeMotor.move(0); delay(delayMove);}
+    inline void autonSpinCont() {intake.move(127); delay(delayMove);}
+    inline void autonStopCont() {intake.move(0); delay(delayMove);}
 
     //Auton Vision Intake Code
     //inline void autonSpinCont() {intake_vision_state = true;}
@@ -24,9 +29,9 @@ struct Intake{
 
     //Vision Controlled Intake
     inline void visionIntake() {
-        intakeMotor.move(127);
+        intake.move(127);
         delay(500);
-        intakeMotor.move(0); 
+        intake.move(0); 
         delay(500);
     }
 };
