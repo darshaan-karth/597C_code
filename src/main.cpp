@@ -57,16 +57,20 @@ void competition_initialize() {}
 * Skills Auton -> **/
 
 //The basic in-match auton sequence
-/*void basic_auton(int chgAngle){
-	//dt.moveHorizontalPID(-30);
-	dt.turnAnglePID(90);
-	delay(100);
-	dt.turnAnglePID(-90);
-	dt.turnAnglePID(180-45);
-}*/
-
 void basic_auton(int chgAngle){
-	dt.moveHorizontalPID(-30);
+	dt.turnAnglePID(90);
+	delay(250);
+	dt.turnAnglePID(-90);
+	delay(250);
+	dt.turnAnglePID(180);
+	delay(250);
+	dt.turnAnglePID(180);
+
+	//dt.moveHorizontalPID(34);
+}
+
+/*void basic_auton(int chgAngle){
+	dt.moveHorizontalPID(-33);
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(-4);
 	delay(20);
@@ -75,23 +79,34 @@ void basic_auton(int chgAngle){
 	dt.turnAnglePID(90 * chgAngle);
 	dt.moveHorizontalPID(24);
 	delay(30);
-	dt.turnAnglePID(180-45);
+	dt.turnAnglePID(180);
 	clamp.toggleClampLock();
 	intk.autonStopCont();
 	delay(20);
 	dt.moveHorizontalPID(40);
-	}
+	}*/
+
 
 //Advanced in-match Win Point auton sequence 
 void win_advanced_auton(int chgAngle){
-	//First Stake Loading Phase with two alliance color rings & 1 Stake
-	dt.moveHorizontalPID(-29);
-	clamp.toggleClampLock();
-	dt.moveHorizontalPID(-14);
-	dt.moveHorizontalPID(5);
-	dt.turnAnglePID(-45 * chgAngle);
+	//TESTING MOVES
+	dt.moveHorizontalPID(-33);
+	dt.turnAnglePID(90);
+	dt.moveHorizontalPID(-5);
 	intk.autonSpinCont();
-	delay(10);
+	delay(50);
+	dt.moveHorizontalPID(5);
+	dt.turnAnglePID(-90);
+	dt.moveHorizontalPID(33);
+	dt.turnAnglePID(-90);
+	dt.moveHorizontalPID(2);
+
+	//First Stake Loading Phase with two alliance color rings & 1 Stake
+	dt.moveHorizontalPID(-33);
+	clamp.toggleClampLock();
+	intk.autonSpinCont();
+	dt.moveHorizontalPID(-4);
+	dt.turnAnglePID(-45 * chgAngle);
 	dt.moveHorizontalPID(34);
 	delay(20);
 	dt.moveHorizontalPID(5);
@@ -125,26 +140,23 @@ void score_advanced_auton(int chgAngle){
 	//First Phase of right mode: 1 alliance color ring & 1 stake
 	dt.moveHorizontalPID(-30);
 	clamp.toggleClampLock();
+	intk.autonSpinCont();
 	dt.moveHorizontalPID(-9); //TESTING -9
 	dt.turnAnglePID(-90 * chgAngle);
 	dt.moveHorizontalPID(24);
 	dt.turnAnglePID(-90 * chgAngle);
 	delay(20);
-	intk.autonSpinCont();
-	delay(500);
-	intk.autonStopCont();
 	
 	//Second Phase of right mode: 2 alliance color rings & 1 stake
-	dt.turnAnglePID(8.3 * chgAngle);
-	intk.autonSpinCont();
-	dt.moveHorizontalPID(24.25);
-	delay(1000);
-	dt.moveHorizontalPID(-24.25);
-	dt.turnAnglePID(-16.6 * chgAngle);
-	dt.moveHorizontalPID(24.25);
-	delay(1000);
-	dt.moveHorizontalPID(-24.25);
-	dt.turnAnglePID(-81.7 * chgAngle);
+	dt.turnAnglePID(8 * chgAngle);
+	dt.moveHorizontalPID(24);
+	delay(50);
+	dt.moveHorizontalPID(-24);
+	dt.turnAnglePID(-16 * chgAngle);
+	dt.moveHorizontalPID(24);
+	delay(50);
+	dt.moveHorizontalPID(-24);
+	dt.turnAnglePID(-82 * chgAngle);
 	dt.moveHorizontalPID(24);
 	intk.autonStopCont();
 	clamp.toggleClampLock();
@@ -281,16 +293,16 @@ void opcontrol() {
 		dt.teleMove();
 
 		//ArmMech System for Moving the Intake System up or down
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && (millis() - armMechTime > 500)) {armMech.toggleArmState(); armMechTime = millis();};
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && (millis() - armMechTime > 250)) {armMech.toggleArmState(); armMechTime = millis();};
 
 		//Intake System to spin, spinFast, spinRev, or stop
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.contSpin(maxVolt);}
 		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {intk.spinRev();}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 500)){intk.contSpin(currentVolt); currentVolt = (currentVolt==maxVolt) ? 0:maxVolt; intkTime = millis();} //changing the volt values for the continous intake system
+		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B) && (millis() - intkTime > 250)){intk.contSpin(currentVolt); currentVolt = (currentVolt==maxVolt) ? 0:maxVolt; intkTime = millis();} //changing the volt values for the continous intake system
 		else if ((master.get_digital(pros::E_CONTROLLER_DIGITAL_R1) == 0) && (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)==0)) {intk.contSpin(currentVolt);} //If no inputs detected, the voltage of the motors will be decided by the volt variable
 
 		//ClampLock System for Mobile Goal Locking
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && (millis() - clampTime > 500)) {clamp.toggleClampLock(); clampTime = millis();};
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_A) && (millis() - clampTime > 250)) {clamp.toggleClampLock(); clampTime = millis();};
 
 		delay(5);// Run for 20 ms then update
 	}

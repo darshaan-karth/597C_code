@@ -42,9 +42,6 @@ struct DriveTrain {
 
     //Function allows for the forward and backward motion of the drivetrain based on the given inches
     inline void moveHorizontalPID(double inches){
-        //double direction = (inches > 0) ? 1:-1;
-        //inches = std::abs(inches);
-        double turn_yaw, turn_controlRPM, left_controlRPM, right_controlRPM;
         int ticks = (inches / distancePerTick) / 2;
 
         //Reseting the position of the left and right group of motors
@@ -55,25 +52,33 @@ struct DriveTrain {
         //Setting the target ticks
         move_pidController.reset();
         turn_pidController.reset();
-        move_pidController.setTargetTicks(ticks);
-        turn_pidController.setTargetTicks(0);
 
-        //(std::abs(left_g.get_position()) < std::abs(ticks) && std::abs(right_g.get_position()) < std::abs(ticks))
-        while (std::abs((left_g.get_position() + right_g.get_position()) / 2) < std::abs(ticks)) {
-            double move_controlRPM = move_pidController.compute(((left_g.get_position() + right_g.get_position()) / 2), false);
+        double left_controlRPM, right_controlRPM;
+        double current_angle, turn_error, move_error, turn_controlRPM, move_controlRPM;
+
+        while (true){
+            if (std::abs((left_g.get_position() + right_g.get_position()) / 2) < std::abs(ticks)) {break;}
+            move_controlRPM = move_pidController.compute(ticks, ((left_g.get_position() + right_g.get_position()) / 2));
             
-            if (std::abs(move_controlRPM) > pid_threshold){
-                turn_yaw = (imuSensor.get_yaw() < 0) ? -(imuSensor.get_yaw() - angle_threshold) : -(imuSensor.get_yaw() + angle_threshold);
-                turn_controlRPM = turn_pidController.compute(turn_yaw, true);
-            }
+            // If we need to correct the turn
+            move_error = ticks - ((left_g.get_position() + right_g.get_position()) / 2);
+            if (std::abs(move_error) > move_threshold) {
+                current_angle = imuSensor.get_yaw();
 
-            if (turn_controlRPM > 0){
-                left_controlRPM = move_controlRPM + turn_controlRPM;
-                right_controlRPM = move_controlRPM;
-            } else {
-                left_controlRPM = move_controlRPM;
-                right_controlRPM = move_controlRPM + turn_controlRPM;
-            }
+                // Normalize the error to ensure the shortest path to the target angle
+                turn_error = 0 - current_angle;
+                if (turn_error < -180) { turn_error += 360;}  // Normalize to [-180, 180]
+                else if (turn_error > 180) { turn_error -= 360;}
+
+                turn_controlRPM = turn_pidController.compute(0, current_angle);
+            } else {turn_controlRPM = 0;}
+            
+            // Adjust the left and right velocities based on the PID outputs
+            left_controlRPM = move_controlRPM + turn_controlRPM;
+            right_controlRPM = move_controlRPM - turn_controlRPM;
+
+            left_controlRPM = left_controlRPM * auton_drive_speedup;
+            right_controlRPM = right_controlRPM * auton_drive_speedup;
 
             left_controlRPM = std::clamp(left_controlRPM, -maxRPM, maxRPM);
             right_controlRPM = std::clamp(right_controlRPM, -maxRPM, maxRPM);
@@ -86,25 +91,30 @@ struct DriveTrain {
 
         left_g.move_velocity(0);
         right_g.move_velocity(0);
-        
-        move_pidController.reset();
-        turn_pidController.reset();
         delay(delayMove);
     }
 
     //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
-    inline void turnAnglePID(double angle){
-        //double direction = (angle > 0) ? 1:-1;
-        //angle = std::abs(angle);     
+    inline void turnAnglePID(double angle){    
         imuSensor.tare_yaw();
-
-        //Setting the target ticks
         turn_pidController.reset();
-        turn_pidController.setTargetTicks(angle);
         
-        while (std::abs(imuSensor.get_yaw()) < std::abs(angle)) {
-            double turn_yaw = (imuSensor.get_yaw() < 0) ? -(imuSensor.get_yaw() - angle_threshold) : -(imuSensor.get_yaw() - angle_threshold);
-            double turn_controlRPM = turn_pidController.compute(turn_yaw, true);
+        double current_angle, error, turn_controlRPM;
+
+        while (true) {
+            current_angle = imuSensor.get_yaw();
+
+            // Normalize the error to ensure the shortest path to the target angle
+            error = angle - current_angle;
+            if (error < -180) { error += 360; }  // Normalize to [-180, 180]
+            else if (error > 180) { error -= 360; }
+
+            // Stop if the robot is close enough to the target angle
+            if (std::abs(error) <= angle_threshold) {break;}
+
+            turn_controlRPM = turn_pidController.compute(angle, current_angle);
+            turn_controlRPM = turn_controlRPM * auton_drive_speedup;
+
             turn_controlRPM = std::clamp(turn_controlRPM, -maxRPM, maxRPM);
 
             left_g.move_velocity(turn_controlRPM);
@@ -115,8 +125,6 @@ struct DriveTrain {
 
         left_g.move_velocity(0);
         right_g.move_velocity(0);
-        
-        turn_pidController.reset();
         delay(delayMove);
     }
 };
