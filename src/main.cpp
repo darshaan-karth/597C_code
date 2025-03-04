@@ -251,25 +251,6 @@ void skills_auton(){
 	dt.moveHorizontalPID(-36);*/
 	}
 
-/**********************TESTING**********************/
-void auton_vision_intake(){
-	int i = 0;
-	while (true){
-		int sig = NAN_SIG_id;
-		i++;
-		screen::print(pros::E_TEXT_MEDIUM, 4, "[%d] Running the TASK - %s", i,(intk.intake_vision_state)?"TRUE":"FALSE");
-		if (intk.intake_vision_state == true){
-			sig = vision_sense.detect_color();
-			if ((sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
-			else if ((sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}
-			else {intk.contSpin(127);}
-		} 
-		else {intk.contSpin(0);}
-		delay(20);
-	}
-}
-/**********************TESTING**********************/
-
 /**
  * Runs the user autonomous code. This function will be started in its own task
  * with the default priority and stack size whenever the robot is enabled via
@@ -283,10 +264,6 @@ void auton_vision_intake(){
  */
 
 void autonomous() {
-	//Initializing the Task to run the auton vision intake
-	//Testing CODE
-	//pros::Task auton_vision(auton_vision_intake);
-
 	if (isSkills == true){
 		skills_auton();
 	} else if (isSkills == false){
@@ -297,8 +274,6 @@ void autonomous() {
 		else{basic_auton(chgAngle);}
 		//else {score_advanced_auton(chgAngle);}
 	}
-
-	//auton_vision.suspend();
 }
 
 /**
@@ -315,25 +290,6 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 
-/****************************TESTING****************************/
-void manu_vision_intake(){
-	int stop = 1;
-	while (stop != 1){
-		int sig = NAN_SIG_id;
-		//screen::print(pros::E_TEXT_MEDIUM, 4, "[%d] Running the TASK - %s", i,(intk.intake_vision_state)?"TRUE":"FALSE");
-		sig = vision_sense.detect_color();
-		if ((sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
-		else if ((sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}
-		
-		//Intake System to spin, spinRev, or stop
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {intk.contSpin(maxVolt);}
-		else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {intk.spinRev();}
-		else {intk.contSpin(0);}
-		delay(20);
-	}
-}
-/****************************TESTING****************************/
-
 void opcontrol() {
 	//Initializing the Task to run the auton vision intake
 	//Testing CODE
@@ -348,10 +304,6 @@ void opcontrol() {
 	while (true) {
 		//Calling DriveTrain System
 		dt.teleMove();
-
-		/*vision_sig = vision_sense.detect_color();
-		if ((vision_sig == BLUE_SIG_id) && (isBlue == false)){intk.visionIntake();} 
-		else if ((vision_sig == RED_SIG_id) && (isBlue == true)){intk.visionIntake();}*/
 		
 		//ArmMech System for Moving the Intake System up or down
 		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_L1) && (millis() - armMechTime > 500)) {armMech.toggleArmState(); armMechTime = millis();};

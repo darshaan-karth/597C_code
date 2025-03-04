@@ -11,9 +11,12 @@ namespace Constants {
     static const int8_t mr_p = -16; // Port of Middle Right (Back Bottom) motor
     static const int8_t  br_p = 9; // Port of Back Right (Back Top) motor, Because this is on top reversing it
 
+    static const int8_t elevatorMotor_p = -19; // Port for the intake button
+    static const int8_t intakeMotor_p = -1; // Port for the intake button
+    static const int8_t imu_p = 5; // Port for the IMU
+
     static constexpr unsigned char clamp_p = 'A'; // Port for the Pneumatic clamps
     static constexpr unsigned char arm_p = 'B'; // Port for the Pneumatic clamps
-    static constexpr unsigned char intakeMotor_p = -19; // Port for the intake button
     static constexpr unsigned char vision_p = 13;
 
     static const double pi = 3.14159265358979323846; // pi
