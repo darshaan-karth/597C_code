@@ -12,7 +12,7 @@ namespace Constants {
     static const int8_t  br_p = 9; // Port of Back Right (Back Top) motor, Because this is on top reversing it
 
     static const int8_t elevatorMotor_p = -19; // Port for the intake button
-    static const int8_t intakeMotor_p = -19; // Port for the intake button
+    static const int8_t intakeMotor_p = -1; // Port for the intake button
     static const int8_t imu_p = 5; // Port for the IMU
 
     static constexpr unsigned char clamp_p = 'A'; // Port for the Pneumatic clamps
@@ -40,7 +40,7 @@ namespace Constants {
     static const double integral_threshold_turn = 10;
 
     //PID Offset
-    static const double auton_drive_speedup = 1.0;   //Change this for speeding auton up or down - CURRENTLY : NORMAL SPEED
+    static const double auton_drive_speedup = 3.0;   //Change this for speeding auton up or down - CURRENTLY : NORMAL SPEED
     static const double move_threshold = 20;
     static const double angle_threshold = 2;
 

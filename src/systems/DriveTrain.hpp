@@ -5,6 +5,8 @@
 #include "pros/motors.h"
 #include "../autonomous/PID.hpp"
 #include "pros/imu.hpp"
+//#include "string"
+#include <iostream>
 
 using namespace Constants;
 using namespace pros;
@@ -54,16 +56,22 @@ struct DriveTrain {
         turn_pidController.reset();
 
         double left_controlRPM, right_controlRPM;
+        double left_pos, right_pos;
         double current_angle, turn_error, move_error, turn_controlRPM, move_controlRPM;
 
         while (true){
-            if (std::abs((left_g.get_position() + right_g.get_position()) / 2) < std::abs(ticks)) {break;}
-            move_controlRPM = move_pidController.compute(ticks, ((left_g.get_position() + right_g.get_position()) / 2));
+            left_pos = left_g.get_position();
+            right_pos = right_g.get_position();
+
+            if (std::abs((left_pos + right_pos) / 2) < std::abs(ticks)) {break;}
+            move_controlRPM = move_pidController.compute(ticks, ((left_pos + right_pos) / 2));
             
             // If we need to correct the turn
-            move_error = ticks - ((left_g.get_position() + right_g.get_position()) / 2);
+            move_error = ticks - ((left_pos + right_pos) / 2);
+            printf("ERROR - %f", move_error);
             if (std::abs(move_error) > move_threshold) {
                 current_angle = imuSensor.get_yaw();
+                printf("ANGLE - %f", current_angle);
 
                 // Normalize the error to ensure the shortest path to the target angle
                 turn_error = 0 - current_angle;
@@ -103,6 +111,8 @@ struct DriveTrain {
 
         while (true) {
             current_angle = imuSensor.get_yaw();
+            std::cout << current_angle << std::endl;
+            //printf("%f", current_angle);
 
             // Normalize the error to ensure the shortest path to the target angle
             error = angle - current_angle;
