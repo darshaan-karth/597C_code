@@ -56,21 +56,17 @@ void competition_initialize() {}
 *		Win Point Advanced Auton Sequence -> 
 * Skills Auton -> **/
 
-//The basic in-match auton sequence
+/*//The basic in-match auton sequence
 void basic_auton(int chgAngle){
 	dt.turnAnglePID(90);
-	delay(250);
 	dt.turnAnglePID(-90);
-	delay(250);
-	dt.turnAnglePID(180);
-	delay(250);
-	dt.turnAnglePID(180);
+	dt.turnAnglePID(179);
+	dt.turnAnglePID(179);
+	
+	//dt.moveHorizontalPID(34);
+	}*/
 
-	/*dt.moveHorizontalPID(34);
-	dt.turnAnglePID(-90);*/
-}
-
-/*void basic_auton(int chgAngle){
+void basic_auton(int chgAngle){
 	dt.moveHorizontalPID(-33);
 	clamp.toggleClampLock();
 	dt.moveHorizontalPID(-4);
@@ -80,13 +76,12 @@ void basic_auton(int chgAngle){
 	dt.turnAnglePID(90 * chgAngle);
 	dt.moveHorizontalPID(24);
 	delay(30);
-	dt.turnAnglePID(180);
+	dt.turnAnglePID(190);
 	clamp.toggleClampLock();
 	intk.autonStopCont();
 	delay(20);
 	dt.moveHorizontalPID(40);
-	}*/
-
+	}
 
 //Advanced in-match Win Point auton sequence 
 void win_advanced_auton(int chgAngle){

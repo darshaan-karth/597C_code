@@ -5,15 +5,13 @@
 #include "pros/motors.h"
 #include "../autonomous/PID.hpp"
 #include "pros/imu.hpp"
-//#include "string"
-#include <iostream>
 
 using namespace Constants;
 using namespace pros;
 
 struct DriveTrain {
     PIDController move_pidController = PIDController(kP_move, kI_move, kD_move, integral_threshold_move);
-    PIDController turn_pidController = PIDController(kP_turn, kI_turn, kD_turn, integral_threshold_turn); 
+    PIDController turn_pidController = PIDController(kP_turn, kI_turn, kD_turn, integral_threshold_turn);  
 
     Imu imuSensor = Imu(imu_p); //Setting up the IMU sensor
     MotorGroup left_g = MotorGroup({fl_p, ml_p, bl_p}); //Abstracting the left side motors as a motor group
@@ -63,7 +61,7 @@ struct DriveTrain {
             left_pos = left_g.get_position();
             right_pos = right_g.get_position();
 
-            if (std::abs((left_pos + right_pos) / 2) < std::abs(ticks)) {break;}
+            if (std::abs((left_pos + right_pos) / 2) >= std::abs(ticks)) {break;}
             move_controlRPM = move_pidController.compute(ticks, ((left_pos + right_pos) / 2));
             
             // If we need to correct the turn
@@ -80,6 +78,9 @@ struct DriveTrain {
 
                 turn_controlRPM = turn_pidController.compute(0, current_angle);
             } else {turn_controlRPM = 0;}
+            
+            turn_controlRPM = 0;
+
             
             // Adjust the left and right velocities based on the PID outputs
             left_controlRPM = move_controlRPM + turn_controlRPM;
@@ -103,7 +104,36 @@ struct DriveTrain {
     }
 
     //Function allows for the angled turned allowing for the drivetrain to turn left or right at any assigned angle
-    inline void turnAnglePID(double angle){    
+     inline void turnAnglePID(double angle){
+        double direction = (angle > 0) ? 1:-1;
+        angle = std::abs(angle);
+
+        double distanceTravel = (trackwidth * angle * pi) / (360*2);
+        int ticks = (distanceTravel / distancePerTick);
+
+        //Reseting the position of the left and right group of motors
+        left_g.tare_position();
+        right_g.tare_position();
+        
+        while (std::abs(left_g.get_position()) < ticks && std::abs(right_g.get_position()) < ticks) {
+            double left_turn_controlRPM = direction * (turn_pidController.compute(ticks, (std::abs(left_g.get_position())) - left_g_offset_threhold));
+            double right_turn_controlRPM = direction * (turn_pidController.compute(ticks, (std::abs(right_g.get_position())) - right_g_offset_threhold));
+
+            left_g.move_velocity(left_turn_controlRPM);
+            right_g.move_velocity(-(right_turn_controlRPM));
+
+            delay(20);
+        }
+
+        left_g.move_velocity(0);
+        right_g.move_velocity(0);
+        
+        turn_pidController.reset();
+
+        delay(delayMove);
+    }
+
+    /*inline void turnAnglePID(double angle){    
         imuSensor.tare_yaw();
         turn_pidController.reset();
         
@@ -111,13 +141,16 @@ struct DriveTrain {
 
         while (true) {
             current_angle = imuSensor.get_yaw();
-            std::cout << current_angle << std::endl;
-            //printf("%f", current_angle);
+            printf("IMU yaw: %f\n", current_angle);
+
+            if (current_angle !=0){
+                current_angle = (current_angle < 0) ? (current_angle + 20) : (current_angle - 20);
+            }
 
             // Normalize the error to ensure the shortest path to the target angle
             error = angle - current_angle;
-            if (error < -180) { error += 360; }  // Normalize to [-180, 180]
-            else if (error > 180) { error -= 360; }
+            if (error <= 0) { error += 360; }  // Normalize to [-180, 180]
+            error = fmod(std::abs(error), 360.0);
 
             // Stop if the robot is close enough to the target angle
             if (std::abs(error) <= angle_threshold) {break;}
@@ -136,5 +169,6 @@ struct DriveTrain {
         left_g.move_velocity(0);
         right_g.move_velocity(0);
         delay(delayMove);
-    }
+    }*/
+
 };

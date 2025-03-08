@@ -34,15 +34,17 @@ namespace Constants {
     static const double integral_threshold_move = 10;
 
     //TURN PID Control Constants
-    static const double kP_turn = 0.129;
+    static const double kP_turn = 0.13;
     static const double kI_turn = 0.0399;
     static const double kD_turn = 0.129;
     static const double integral_threshold_turn = 10;
 
     //PID Offset
-    static const double auton_drive_speedup = 3.0;   //Change this for speeding auton up or down - CURRENTLY : NORMAL SPEED
-    static const double move_threshold = 20;
-    static const double angle_threshold = 2;
+    static const double auton_drive_speedup = 2.0;   //Change this for speeding auton up or down - CURRENTLY : NORMAL SPEED
+    static const double move_threshold = 100;
+    static const double angle_threshold = 1;
+    static const double left_g_offset_threhold = 0;//.425;
+    static const double right_g_offset_threhold = 0;
 
     //Restricting Variables
     static const double maxRPM = 600;
@@ -56,5 +58,5 @@ namespace Constants {
     static const bool isSkills = false; // if FALSE then in-match auton else Skills auton
 
     static const bool winPointSide = false; // if TRUE then in-match auton would be starting from the side with extra mobile stake else the other side
-    static const bool isBlue = true; // if TRUE then in-match auton is starting from BLUE SIDE else RED SIDE
+    static const bool isBlue = false; // if TRUE then in-match auton is starting from BLUE SIDE else RED SIDE
 };
